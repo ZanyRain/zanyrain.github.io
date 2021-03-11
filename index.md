@@ -20,4 +20,4 @@ Blog: https://blog.zanyrain.me
 
 Github: https://github.com/ZanyRain
 
-**English** | [Chinese](#)
+**English** | [中文](zh.md)
