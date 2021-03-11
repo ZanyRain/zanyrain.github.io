@@ -1,37 +1,23 @@
-## Welcome to GitHub Pages
+## About
 
-You can use the [editor on GitHub](https://github.com/ZanyRain/zanyrain.github.io/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
+ZanyRain (1999 - Now)
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+Java CRUD Boy / FOSS Fans
 
-### Markdown
+Daily distribution: Debian 11
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+I love [Luo Tianyi](https://en.wikipedia.org/wiki/Luo_Tianyi) forever!
 
-```markdown
-Syntax highlighted code block
+## Contacts
 
-# Header 1
-## Header 2
-### Header 3
+~~Mail: contact@zanyrain.me~~
 
-- Bulleted
-- List
+Telegram: [@ZanyRain](https://t.me/ZanyRain)
 
-1. Numbered
-2. List
+## Links
 
-**Bold** and _Italic_ and `Code` text
+Blog: https://blog.zanyrain.me
 
-[Link](url) and ![Image](src)
-```
+Github: https://github.com/ZanyRain
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/ZanyRain/zanyrain.github.io/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+**English** | [Chinese](#)
