@@ -16,8 +16,8 @@ Telegram: [@ZanyRain](https://t.me/ZanyRain)
 
 ## 友情链接
 
-博客: https://blog.zanyrain.me
+博客: [https://blog.zanyrain.me](https://blog.zanyrain.me)
 
-Github: https://github.com/ZanyRain
+Github: [https://github.com/ZanyRain](https://github.com/ZanyRain)
 
-[English](index.md) | **中文**
+[English](index) | **中文**
