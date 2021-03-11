@@ -16,8 +16,8 @@ Telegram: [@ZanyRain](https://t.me/ZanyRain)
 
 ## Links
 
-Blog: https://blog.zanyrain.me
+Blog: [https://blog.zanyrain.me](https://blog.zanyrain.me)
 
-Github: https://github.com/ZanyRain
+Github: [https://github.com/ZanyRain](https://github.com/ZanyRain)
 
-**English** | [中文](zh.md)
+**English** | [中文](zh)
