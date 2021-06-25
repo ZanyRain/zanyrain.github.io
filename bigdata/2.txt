@@ -1,0 +1,55 @@
+一、
+1、
+vim /etc/sysconfig/network-scripts/ifcfg-eth0
+IPADDR=192.168.174.130
+GATEWAY=192.168.174.2
+DNS1=8.8.8.8
+BOOTPROTO=static
+NETMASK=255.255.255.0
+2、service iptables stop
+3、tar -zxvf /export/software/jdk-8u162-linux-x64.tar -C /export/servers/
+4、hadoop-env.sh core-site.xml hdfs-site.xml yarn-site.xml mapred-site.xml
+5、hdfs namenode -format
+二、
+1、jps
+2、查看格式化后生成的data目录里的namenode、datanode文件下的current/下的VERSION文件中的CID是否一致：
+若一致，则根据格式化时窗口输出的报错信息修改相应的报错；若不一致，重新进行格式化，删除配置文件中的配置的
+相关目录。
+查看logs目录下日志文件，查看报错信息
+3、java hadoop mysql
+4、将SecondaryName中的数据复制到NameNode，重启NameNode
+三、
+spark四大组件及作用：
+	1）、SparkStreaming，实时数据流式计算；
+	2）、SparkSQL，操作结构化数据；
+	3）、GraphX，面向图计算的框架与算法库；
+	4）、MLlib，机器学习算法库。
+四、
+
+1、建表：
+touch hive.txt或vim hive.txt 
+hadoop fs -put hive.txt /hive/input
+
+**************************
+进入hive目录
+	cd /export/servers/apache-hive-1.2.1-bin/
+启动hive
+	bin/hive
+
+退出hive
+	exit;
+***************************************************
+2、加载本地数据至hive表：
+create table hive (user_id string,city_id int, cat_id string, visits_id int,dt string, hour int) row format delimited fields terminated by ','; 
+load data inpath '/hive/input/hive.txt' into table hive;
+3、统计PV、UV值：
+PV
+select city_id,dt,count(cat_id) from hive where dt="2014-11-11" group by city_id,dt; 
+结果： 23 2014-11-11 10 
+UV
+select city_id ,dt,count(distinct user_id) from hive where dt="2014-11-11" group by city_id,dt; 
+结果： 23 2014-11-11 1
+
+4、
+select city_id,dt,count(cat_id) from hive where dt="2014-11-11" and city_id=23 group by city_id,dt; 
+结果： 23 2014-11-11 10
