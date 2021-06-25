@@ -1,0 +1,179 @@
+一、Hadoop环境搭建
+
+
+1、配置集群免密登录（5）
+
+
+ ssh ssh-keygen –t rsa 生成秘钥文件
+
+
+ sh-copy-id 复制秘钥文件到其他服务器
+
+
+ ssh Hadoop02 不需要再输入密码
+
+
+ 2、解压jdk、Hadoop安装包命令（5）
+tar -zxvf /export/software/jdk-8u162-linux-x64.tar.gz.tar.gz -C /export/servers
+
+
+ 3、配置环境变量并验证（5）
+vim /etc/profile 
+export HADOOP_HOME=/export/servers/hadoop-2.7.4 
+export PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin 
+source /etc/profile 
+# 验证版本号 hadoop version
+
+
+ 4、修改配置文件（列出修改的五个配置文件）（5）
+  hadoop-env.sh
+
+
+ core-site.xml
+
+
+ hdfs-site.xml
+
+
+mapred-site.xml
+
+
+yarn-site.xml
+
+
+ 5、分别启动hdfs、yarn的命令（5）
+	start-hdfs.sh 
+	start-yarn.sh
+
+
+ 6、运行wordcount测试程序（5）
+
+
+准备文件
+hadoop fs -mkdir -p /wordcount/input 、
+hadoop fs -ls 
+hadoop fs -put /export/data/words.txt /wordcount/input
+
+
+执行share目录下的示例jar包
+hadoop jar hadoop-mapreduce-examples-2.7.4.jar wordcount /wordcount/input/ /wordcount/output/
+
+
+查看结果
+hadoop fs -cat /wordcount/output/part-r-00000
+
+
+二、集群管理与运维
+
+
+1、查看集群webui页面（5）
+	https:/hadoop01:50070 
+	https:/hadoop01:9000
+ 2、查看节点启动服务（5） 
+jps
+3、假如节点未启动，如何查找并解决问题(5)
+取hadoop的logs目录下寻找对应的日志，找到报错信息
+4、yarn上任务执行失败，如何下载日志并查看 (5)
+# 网页UI版
+ 点击 Applications 
+找到失败的appliction 可以下载并查看日志 
+# 命令版 失败的id 
+yarn logs -applicationId application_15xxxxx5_2550 > logs.txt
+
+
+三、大数据技术服务
+
+
+1、请介绍Flume组件的作用（5） 
+是一个日志采集框架 Flume可以采集文件，socket数据包等各种形式源数据， 又可以将采集到的数据输出到HDFS、hbase、hive、kafka等众多外部存储系统中
+2、请介绍sqoop组件的作用（5）
+sqoop是 "Hadoop和关系数据库服务器之间传送数据”的工具。 导入数据：MySQL，Oracle导入数据到Hadoop的HDFS、HIVE、HBASE等数据存储系统； 导出数据：从Hadoop的文件系统中导出数据到关系数据库
+四、大数据分析与挖掘（wordcount mapreduce）
+ 1、简述map任务的执行过程（10） 
+每个Mapper任务是一个java进程， 它会读取HDFS中的文件，解析成很多的键值对， 经过map方法，对处理后的键值对进行输出。
+hadoop fs -cat /wordcount/output/part-r-00000 1 https:/hadoop01:50070 https:/hadoop01:9000 12 jps 1 取hadoop的logs目录下寻找对应的日志，找到报错信息 1 # 网页UI版 点击 Applications 找到失败的appliction 可以下载并查看日志 # 命令版 失败的id yarn logs -applicationId application_15xxxxx5_2550 > logs.txt 1234567 是一个日志采集框架 Flume可以采集文件，socket数据包等各种形式源数据， 又可以将采集到的数据输出到HDFS、hbase、hive、kafka等众多外部存储系统中 123 sqoop是 "Hadoop和关系数据库服务器之间传送数据”的工具。 导入数据：MySQL，Oracle导入数据到Hadoop的HDFS、HIVE、HBASE等数据存储系统； 导出数据：从Hadoop的文件系统中导出数据到关系数据库 1234
+
+
+2、简述shuffle阶段执行流程（10）
+Shuffle是Map 方法之后，Reduce 方法之前的数据处理过程。 
+简言之：多个mapTask的输出数据，按照不同的Partitioner分区，通过网络copy到不同的reduce节 点上。
+ 它用来确保每个reducer的输入都是按键排序的 具体 Shuffle 过程详解，如下： 
+（1）MapTask 收集我们的 map()方法输出的 kv 对，放到内存缓冲区中 
+（2）从内存缓冲区不断溢出本地磁盘文件，可能会溢出多个文件 
+（3）多个溢出文件会被合并成大的溢出文件 
+（4）在溢出过程及合并的过程中，都要调用 Partitioner 进行分区和针对 key 进行排序 
+（5）ReduceTask 根据自己的分区号，去各个 MapTask 机器上取相应的结果分区数据 
+（6）ReduceTask 会抓取到同一个分区的来自不同 MapTask 的结果文件，ReduceTask 会将这些 文件再进行合并（归并排序） 
+（7）合并成大文件后，Shuffle 的过程也就结束了，后面进入 ReduceTask 的逻辑运算过 程（从文件中取出一个一个的键值对 Group，调用用户自定义的 reduce()
+
+
+
+ 3、简述reduce任务的执行过程（10）
+Map过程输出的键值对，将由Reducer组件进行合并处理，最终的某种形式的结果输出。
+例如：对相同 key的数据进行合并 ReduceTask的工作过程主要经历了5个阶段， 分别是Copy阶段、Merge阶段、Sort阶段、Reduce阶段和Write阶段。
+ 4、编写主要代码（10）
+
+
+WordMapper 
+public class WordMapper extends Mapper<LongWritable, Text, Text, IntWritable> { 
+	@Override
+	 protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException { 
+		// 将value转成string，再分割字符串,组成二元组 
+		String[] wordArr = value.toString().split(" "); 
+		for (String word : wordArr){ 
+			context.write(new Text(word),new IntWritable(1)); 
+		}
+	}
+ }
+WordReducer
+public class WordReducer extends Reducer<Text, IntWritable,Text,IntWritable> { 
+	IntWritable intWritable = new IntWritable(); 
+	//<hello,{1,1}>调用reduce2次 
+	@Override 
+	protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException { 
+		int sum = 0; 
+		for (IntWritable value:values){ 
+			sum += value.get(); 
+		}
+		intWritable.set(sum); 
+		context.write(key,intWritable);
+	}
+ }
+每个Mapper任务是一个java进程， 它会读取HDFS中的文件，解析成很多的键值对， 经过map方法，对处理后的键值对进行输出。 1234 Shuffle是Map 方法之后，Reduce 方法之前的数据处理过程。 简言之：多个mapTask的输出数据，按照不同的Partitioner分区，通过网络copy到不同的reduce节 点上。 它用来确保每个reducer的输入都是按键排序的 具体 Shuffle 过程详解，如下： （1）MapTask 收集我们的 map()方法输出的 kv 对，放到内存缓冲区中 （2）从内存缓冲区不断溢出本地磁盘文件，可能会溢出多个文件 （3）多个溢出文件会被合并成大的溢出文件 （4）在溢出过程及合并的过程中，都要调用 Partitioner 进行分区和针对 key 进行排序 （5）ReduceTask 根据自己的分区号，去各个 MapTask 机器上取相应的结果分区数据 （6）ReduceTask 会抓取到同一个分区的来自不同 MapTask 的结果文件，ReduceTask 会将这些 文件再进行合并（归并排序） （7）合并成大文件后，Shuffle 的过程也就结束了，后面进入 ReduceTask 的逻辑运算过 程（从文件中取出一个一个的键值对 Group，调用用户自定义的 reduce() 1234567891011121314 Map过程输出的键值对，将由Reducer组件进行合并处理，最终的某种形式的结果输出。例如：对相同 key的数据进行合并 ReduceTask的工作过程主要经历了5个阶段， 分别是Copy阶段、Merge阶段、Sort阶段、Reduce阶段和Write阶段。 1234 public class WordMapper extends Mapper<LongWritable, Text, Text, IntWritable> { @Override protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException { // 将value转成string，再分割字符串,组成二元组 String[] wordArr = value.toString().split(" "); for (String word : wordArr){ context.write(new Text(word),new IntWritable(1)); } } 123456789 1
+
+
+WordDriver
+
+
+public class WordDriver { 
+	public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException { 
+		//创建job(需加载Hadoop配置) 
+		Configuration config = new Configuration(); 
+		Job job = Job.getInstance(config); 
+
+		//指定执行程序的class字节码文件 
+		job.setJarByClass(WordDriver.class); 
+		job.setMapperClass(WordMapper.class); 
+		job.setReducerClass(WordReducer.class); 
+
+		//设置mapper的输出类型 
+		job.setMapOutputKeyClass(Text.class);
+		 job.setMapOutputValueClass(IntWritable.class); 
+
+		//设置reducer的输出类型 
+		job.setOutputKeyClass(Text.class); 
+		job.setOutputValueClass(IntWritable.class); 
+		
+		//设置输入文件路径
+		 //D:\Projects\ideaProjects\bigDataClass\export\input\hehe.txt
+		 FileInputFormat.setInputPaths(job,new Path(args[0])); 
+
+		//设置输出文件路径 
+		//D:\Projects\ideaProjects\bigDataClass\export\output 
+		FileOutputFormat.setOutputPath(job,new Path(args[1])); 
+		
+		//提交job 
+		//System.exit(job.waitForCompletion(true)?0:1); 
+		System.out.println("执行结果："+ job.waitForCompletion(true)); 
+	} 
+}
